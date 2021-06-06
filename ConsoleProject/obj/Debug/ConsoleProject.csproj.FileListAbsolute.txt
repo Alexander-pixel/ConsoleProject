@@ -1,0 +1,5 @@
+/Users/aleksandrtkacenko/Desktop/Шаг/C#/ConsoleProject/ConsoleProject/obj/Debug/ConsoleProject.csprojAssemblyReference.cache
+/Users/aleksandrtkacenko/Desktop/Шаг/C#/ConsoleProject/ConsoleProject/bin/Debug/ConsoleProject.exe
+/Users/aleksandrtkacenko/Desktop/Шаг/C#/ConsoleProject/ConsoleProject/bin/Debug/ConsoleProject.pdb
+/Users/aleksandrtkacenko/Desktop/Шаг/C#/ConsoleProject/ConsoleProject/obj/Debug/ConsoleProject.exe
+/Users/aleksandrtkacenko/Desktop/Шаг/C#/ConsoleProject/ConsoleProject/obj/Debug/ConsoleProject.pdb
