@@ -42,22 +42,33 @@ namespace ConsoleProject
 
         public void Parse(string str)
         {
-            // move copy rename
             try
             {
-                //int pos = str.IndexOf(' ');
-                //string command = str.Substring(0, str.Length);
-
-                if (/*IsCorrect(command)*/IsCorrect(str))
+                int pos = str.IndexOf(' ');
+                string command = String.Empty;
+                if (pos != -1)
                 {
-                    _command = (Command) Enum.Parse(typeof(Command), str);
-                    //_command = (Command) Enum.Parse(typeof(Command), command);
-                    if(_command != Command.cls && _command != Command.help)
+                    command = str.Substring(0, pos);
+                    if (IsCorrect(command))
+                    {
+                        _command = (Command) Enum.Parse(typeof(Command), command);
+                        Console.WriteLine(_command);
+                        _attributes.Clear();
                         _attributes.Add(GetAddress(str));
+                        Console.WriteLine(_attributes[0]);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Wrong command input.");
+                    }
                 }
                 else
                 {
-                    throw new ArgumentException("Wrong command input.");
+                    Console.WriteLine("We are here.");
+                    if (str == Command.dir.ToString() || str == Command.cls.ToString() ||
+                        str == Command.help.ToString())
+                        command = str;
+                    _command = (Command) Enum.Parse(typeof(Command), command);
                 }
             }
             catch (Exception e)
@@ -73,7 +84,6 @@ namespace ConsoleProject
             {
                 if (c == command)
                 {
-                    //Console.WriteLine(c);
                     return true;
                 }
             }

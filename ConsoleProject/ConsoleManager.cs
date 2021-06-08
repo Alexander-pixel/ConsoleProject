@@ -17,7 +17,8 @@ namespace ConsoleProject
 
         public ConsoleManager()
         {
-            _directoryInfo = new DirectoryInfo("/Users/aleksandrtkacenko/Desktop/Шаг/C#/ConsoleProject");
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            _directoryInfo = new DirectoryInfo(allDrives[0].ToString());
             _command = new ConsoleCommand();
         }
 
@@ -37,7 +38,7 @@ namespace ConsoleProject
         private void MakeAction()
         {
             List<string> attributes = _command.GetAttributes();
-            
+
             switch (_command.Command.ToString())
             {
                 case "cd":
@@ -49,7 +50,11 @@ namespace ConsoleProject
                 case "help":
                     HelpMethod();
                     break;
+                case "dir":
+                    DirMethod();
+                    break;
                 
+                    
             }
         }
 
@@ -68,14 +73,14 @@ namespace ConsoleProject
             Console.Clear();
         }
 
-        public void DirMethod(DirectoryInfo obj)
+        public void DirMethod()
         {
             Console.WriteLine($"{"Name",-15}      {"Time",-10}       Length");
-            foreach (var d in obj.GetDirectories())
+            foreach (var d in _directoryInfo.GetDirectories())
             {
                 Console.WriteLine($"{d.Name,-15}  DIR {d.CreationTime.ToShortTimeString(),-10}");
             }
-            foreach (var f in obj.GetFiles())
+            foreach (var f in _directoryInfo.GetFiles())
             {
                 Console.WriteLine($"{f.Name,-15} {f.Extension,4} {f.CreationTime.ToShortTimeString(),-10} {f.Length/1024.0:0.00} KB");
             }
@@ -83,8 +88,14 @@ namespace ConsoleProject
 
         public void CdMethod(DirectoryInfo obj)
         {
-            _directoryInfo = new DirectoryInfo(obj.Name);
-            Directory.SetCurrentDirectory(_directoryInfo.Name);
+            if(obj.Exists)
+                _directoryInfo = new DirectoryInfo(obj.Name);
+            else if (_directoryInfo.Name == "..") // не пашет
+                _directoryInfo = _directoryInfo.Parent;
+            else
+            {
+                Console.WriteLine($"-bash: {obj.Name}: command not found");
+            }
         }
 
         public void CopyMethod(DirectoryInfo source, DirectoryInfo dest)
@@ -108,10 +119,19 @@ namespace ConsoleProject
             }
         }
 
-        public void DelMethod(FileInfo obj)
+        public void DelMethod(string file, DirectoryInfo directoryInfo)
         {
-            if(File.Exists(obj.Name) == true)
-                File.Delete(obj.Name);
+            DirectoryInfo startDirectory = new DirectoryInfo("/Users/aleksandrtkacenko/Desktop");
+
+            foreach (string f in Directory.GetFiles(startDirectory.Name))
+            {
+                Console.WriteLine(f);
+            }
+
+            foreach (string d in Directory.GetDirectories(startDirectory.Name))
+            {
+                DelMethod(file, new DirectoryInfo(d));
+            }
         }
 
         public void RmdirMethod(DirectoryInfo obj)
