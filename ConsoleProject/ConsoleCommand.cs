@@ -5,41 +5,6 @@ namespace ConsoleProject
 {
     public class ConsoleCommand
     {
-        /*private Command _command;
-        private List<string> _attributes;*/
-
-        /*public Command Command
-        {
-            get => _command;
-            set => _command = value;
-        }
-
-        public List<string> GetAttributes()
-        {
-            return _attributes;
-        }
-        
-        public ConsoleCommand()
-        {
-            _attributes = new List<string>();
-        }*/
-        
-        /*private string GetAddress(string str)
-        {
-            try
-            {
-                int begin = str.IndexOf(' ')+1;
-                string source = str.Substring(begin);
-                return source;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            return null;
-        }*/
-
         public List<string> Parse(string str)
         {
             /*try
@@ -115,17 +80,5 @@ namespace ConsoleProject
 
             return null;
         }
-
-        /*private bool IsCorrect(string command)
-        {
-            foreach (var c in Enum.GetNames(typeof(Command)))
-            {
-                if (c == command)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }*/
     }
 }

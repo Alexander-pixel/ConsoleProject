@@ -49,7 +49,7 @@ namespace ConsoleProject
                         CLSMethod();
                         break;
                     case "help":
-                        HelpMethod();
+                        HelpMethod(list[1]);
                         break;
                     case "dir":
                         DirMethod();
@@ -75,6 +75,9 @@ namespace ConsoleProject
                     case "find":
                         FileSearchByName(list[1], new DirectoryInfo("."));
                         break;
+                    case "move":
+                        MoveMethod(list[1], list[2]);
+                        break;
                     default:
                         break;
                 }
@@ -82,14 +85,56 @@ namespace ConsoleProject
             
         }
 
-        public void HelpMethod()
+        public void HelpMethod(string attr)
         {
-            Console.WriteLine("Type cls to clear console");
-            Console.WriteLine("Type dir to see containing");
-            Console.WriteLine("Type cd + folder name to move");
-            Console.WriteLine("Type copy + folder name to copy");
-            Console.WriteLine("Type del + folder name to delete");
-            Console.WriteLine("Type mkdir + folder name to create");
+            switch (attr)
+            {
+                case "cd":
+                    Console.WriteLine("Change the current directory to DIR.");
+                    break;
+                case "cls":
+                    Console.WriteLine("Type cls to clear console.");
+                    break;
+                case "dir":
+                    Console.WriteLine("Type dir to see containing.");
+                    break;
+                case "copy":
+                    Console.WriteLine("Type copy + folder name to copy.");
+                    break;
+                case "del":
+                    Console.WriteLine("Type del + folder name to delete.");
+                    break;
+                case "mkdir":
+                    Console.WriteLine("Type mkdir + folder name to create.");
+                    break;
+                case "rmdir":
+                    Console.WriteLine("Type rmdir + folder name to delete.");
+                    break;
+                case "help":
+                    Console.WriteLine("Display helpful information about builtin commands.");
+                    break;
+                case "touch":
+                    Console.WriteLine("Type touch + file name to create");
+                    break;
+                case "move":
+                    Console.WriteLine("Type move + file name to move to other directory.");
+                    break;
+                case "exit":
+                    Console.WriteLine("Type exit to exit to end program.");
+                    break;
+                case "cat":
+                    Console.WriteLine("Type cat to read file.");
+                    break;
+                case "attrib":
+                    Console.WriteLine("Type attrib to print file attributes.");
+                    break;
+                case "find":
+                    Console.WriteLine("Type find to search for file.");
+                    break;
+                default:
+                    break;
+            }
+            
         }
 
         public void CLSMethod()
@@ -121,22 +166,25 @@ namespace ConsoleProject
         {
             try
             {
-                /*Regex pattern = new Regex(@"^[/][A-Za-z]+");
-                bool match = pattern.IsMatch(obj);
-                */
+               // Regex pattern = new Regex(@"^[/][A-Za-z]+");
+               /* Regex pattern = new Regex(@"^[a - zA - z][:]\\");
+                bool match = pattern.IsMatch(obj);*/
+                
                 
                 Directory.SetCurrentDirectory(obj);
                 _directoryInfo = new DirectoryInfo(".");
                 
                 /*if (!match)
                 {
-                    //Console.WriteLine($"{_directoryInfo.Name}");
-                    
                     _directoryInfo = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}\\");
+                    Directory.SetCurrentDirectory(_directoryInfo.Name);
+                    Console.WriteLine("We are here");
                 }
                 else
                 {
                     _directoryInfo = new DirectoryInfo($"{obj}\\");
+                    Directory.SetCurrentDirectory(_directoryInfo.Name);
+                    Console.WriteLine("We are here");
                 }*/
                 
             }
@@ -220,7 +268,7 @@ namespace ConsoleProject
         {
             try
             {
-                Regex pattern = new Regex(@"^[A-Za-z]:\\");
+                Regex pattern = new Regex(@"^[A-Za-z]+/");
                 bool match = pattern.IsMatch(obj);
 
                 if (!match)
@@ -242,16 +290,10 @@ namespace ConsoleProject
             }
         }
 
-        public void MoveMethod(FileInfo file, DirectoryInfo destination)
+        public void MoveMethod(string file, string destination)
         {
-            if (Directory.Exists(destination.Name))
-                File.Move(file.Name, destination.Name);
-        }
-        
-        public void MoveMethod(DirectoryInfo source, DirectoryInfo destination)
-        {
-            if (Directory.Exists(destination.Name))
-                source.MoveTo(destination.Name);
+            if (Directory.Exists(destination))
+                File.Move(file, destination);
         }
 
         public void ExitMethod()
