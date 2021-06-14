@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ConsoleProject
 {
@@ -27,35 +28,58 @@ namespace ConsoleProject
             string input = String.Empty;
             while (true)
             {
-                Console.Write($"{_directoryInfo.Name}:   ");
+                Console.Write($"{Directory.GetCurrentDirectory()}:  ");
                 input = Console.ReadLine();
-                _command.Parse(input);
-                MakeAction();
+                List<string> list = _command.Parse(input);
+                MakeAction(list);
                 Console.WriteLine();
             }
         }
 
-        private void MakeAction()
+        private void MakeAction(List<string> list)
         {
-            List<string> attributes = _command.GetAttributes();
-
-            switch (_command.Command.ToString())
+            if (list != null)
             {
-                case "cd":
-                    CdMethod(new DirectoryInfo(attributes[0]));
-                    break;
-                case "cls":
-                    CLSMethod();
-                    break;
-                case "help":
-                    HelpMethod();
-                    break;
-                case "dir":
-                    DirMethod();
-                    break;
-                
-                    
+                switch (list[0])
+                {
+                    case "cd":
+                        CdMethod(list[1]);
+                        break;
+                    case "cls":
+                        CLSMethod();
+                        break;
+                    case "help":
+                        HelpMethod();
+                        break;
+                    case "dir":
+                        DirMethod();
+                        break;
+                    case "mkdir":
+                        MkdirMethod(list[1]);
+                        break;
+                    case "rmdir":
+                        RmdirMethod(list[1]);
+                        break;
+                    case "exit":
+                        ExitMethod();
+                        break;
+                    case "copy":
+                        CopyMethod(list[1], list[2]);
+                        break;
+                    case "touch":
+                        TouchMethod(list[1]);
+                        break;
+                    case "cat":
+                        CatMethod(list[1]);
+                        break;
+                    case "find":
+                        FileSearchByName(list[1], new DirectoryInfo("."));
+                        break;
+                    default:
+                        break;
+                }
             }
+            
         }
 
         public void HelpMethod()
@@ -75,48 +99,80 @@ namespace ConsoleProject
 
         public void DirMethod()
         {
-            Console.WriteLine($"{"Name",-15}      {"Time",-10}       Length");
-            foreach (var d in _directoryInfo.GetDirectories())
+            try
             {
-                Console.WriteLine($"{d.Name,-15}  DIR {d.CreationTime.ToShortTimeString(),-10}");
+                Console.WriteLine($"{"Name",-15}      {"Time",-10}       Length");
+                foreach (var d in _directoryInfo.GetDirectories())
+                {
+                    Console.WriteLine($"{d.Name,-15}  DIR {d.CreationTime.ToShortTimeString(),-10}");
+                }
+                foreach (var f in _directoryInfo.GetFiles())
+                {
+                    Console.WriteLine($"{f.Name,-15} {f.Extension,4} {f.CreationTime.ToShortTimeString(),-10} {f.Length / 1024.0:0.00} KB");
+                }
             }
-            foreach (var f in _directoryInfo.GetFiles())
+            catch (Exception e)
             {
-                Console.WriteLine($"{f.Name,-15} {f.Extension,4} {f.CreationTime.ToShortTimeString(),-10} {f.Length/1024.0:0.00} KB");
+                Console.WriteLine(e.Message);
+            } 
+        }
+
+        public void CdMethod(string obj)
+        {
+            try
+            {
+                /*Regex pattern = new Regex(@"^[/][A-Za-z]+");
+                bool match = pattern.IsMatch(obj);
+                */
+                
+                Directory.SetCurrentDirectory(obj);
+                _directoryInfo = new DirectoryInfo(".");
+                
+                /*if (!match)
+                {
+                    //Console.WriteLine($"{_directoryInfo.Name}");
+                    
+                    _directoryInfo = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}\\");
+                }
+                else
+                {
+                    _directoryInfo = new DirectoryInfo($"{obj}\\");
+                }*/
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}");
             }
         }
 
-        public void CdMethod(DirectoryInfo obj)
+        public void CopyMethod(string source, string dest)
         {
-            if(obj.Exists)
-                _directoryInfo = new DirectoryInfo(obj.Name);
-            else if (_directoryInfo.Name == "..") // не пашет
-                _directoryInfo = _directoryInfo.Parent;
-            else
+            try
             {
-                Console.WriteLine($"-bash: {obj.Name}: command not found");
-            }
-        }
-
-        public void CopyMethod(DirectoryInfo source, DirectoryInfo dest)
-        {
-            _directoryInfo = new DirectoryInfo(source.Name);
-            DirectoryInfo destination = new DirectoryInfo(dest.Name);
+                _directoryInfo = new DirectoryInfo(source);
+                DirectoryInfo destination = new DirectoryInfo(dest);
             
-            if (!System.IO.Directory.Exists(destination.Name))
-            {
-                System.IO.Directory.CreateDirectory(destination.Name);
+                if (!Directory.Exists(destination.Name))
+                {
+                    Directory.CreateDirectory(destination.Name);
+                }
+                String[] files = Directory.GetFiles(_directoryInfo.Name);
+                String[] directories = Directory.GetDirectories(_directoryInfo.Name);
+                foreach (string s in files)
+                {
+                    File.Copy(s, Path.Combine(destination.Name, Path.GetFileName(s)), true);     
+                }
+                foreach(string d in directories)
+                {
+                    Directory.Move(Path.Combine(_directoryInfo.Name, Path.GetFileName(d)), Path.Combine(destination.Name, Path.GetFileName(d)));
+                }
             }
-            String[] files = Directory.GetFiles(_directoryInfo.Name);
-            String[] directories = Directory.GetDirectories(_directoryInfo.Name);
-            foreach (string s in files)
+            catch (Exception e)
             {
-                File.Copy(s, Path.Combine(destination.Name, Path.GetFileName(s)), true);     
+                Console.WriteLine(e.Message);
             }
-            foreach(string d in directories)
-            {
-                Directory.Move(Path.Combine(_directoryInfo.Name, Path.GetFileName(d)), Path.Combine(destination.Name, Path.GetFileName(d)));
-            }
+            
         }
 
         public void DelMethod(string file, DirectoryInfo directoryInfo)
@@ -134,36 +190,126 @@ namespace ConsoleProject
             }
         }
 
-        public void RmdirMethod(DirectoryInfo obj)
+        public void RmdirMethod(string obj)
         {
-            if (Directory.Exists(obj.Name) == true)
+            try
             {
-                _directoryInfo = new DirectoryInfo(obj.Name);
-                _directoryInfo.Delete();
+                Regex pattern = new Regex(@"^[A-Za-z]:\\");
+                bool match = pattern.IsMatch(obj);
+
+                if (!match)
+                {
+                    //Console.WriteLine(_directoryInfo.FullName);
+                    DirectoryInfo dir = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}");
+                    dir.Delete();
+                }
+                else
+                {
+                    //Console.WriteLine(_directoryInfo.FullName);
+                    DirectoryInfo directoryinfo = new DirectoryInfo($"{obj}");
+                    directoryinfo.Delete();
+                }
             }
-            else
+            catch (Exception e)
             {
-                
+                Console.WriteLine($"{e.Message}");
             }
         }
 
-        public void MkdirMethod(DirectoryInfo obj)
+        public void MkdirMethod(string obj)
         {
-            _directoryInfo = new DirectoryInfo(obj.Name);
-            _directoryInfo.CreateSubdirectory("New folder");
+            try
+            {
+                Regex pattern = new Regex(@"^[A-Za-z]:\\");
+                bool match = pattern.IsMatch(obj);
+
+                if (!match)
+                {
+                    //Console.WriteLine(_directoryInfo.FullName);
+                    DirectoryInfo dir = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}");
+                    dir.Create();
+                }
+                else
+                {
+                    //Console.WriteLine(_directoryInfo.FullName);
+                    DirectoryInfo directoryinfo = new DirectoryInfo($"{obj}");
+                    directoryinfo.Create();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}");
+            }
         }
 
         public void MoveMethod(FileInfo file, DirectoryInfo destination)
         {
-            if (Directory.Exists(destination.Name) == true)
+            if (Directory.Exists(destination.Name))
                 File.Move(file.Name, destination.Name);
         }
         
         public void MoveMethod(DirectoryInfo source, DirectoryInfo destination)
         {
-            if (Directory.Exists(destination.Name) == true)
+            if (Directory.Exists(destination.Name))
                 source.MoveTo(destination.Name);
         }
+
+        public void ExitMethod()
+        {
+            Environment.Exit(-1);
+        }
+
+        public void TouchMethod(string name)
+        {
+            File.Create(name);
+        }
+
+        public void CatMethod(string name)
+        {
+            try
+            {
+                Console.WriteLine(File.ReadAllText(name));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        public void Attrib(string name)
+        {
+            try
+            {
+                var arr = File.GetAttributes(name);
+                Console.WriteLine(arr);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
         
+        public void FileSearchByName(string str, DirectoryInfo obj)
+        {
+            try
+            {
+                Regex regex = new Regex(str, RegexOptions.IgnoreCase);
+
+                foreach (var file in obj.GetFiles())
+                {
+                    if(regex.IsMatch(file.Name))
+                        Console.WriteLine(file.Name);
+                }
+
+                foreach (var d in obj.GetDirectories())
+                {
+                    FileSearchByName(str, d);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
     }
 }
