@@ -166,26 +166,19 @@ namespace ConsoleProject
         {
             try
             {
-               // Regex pattern = new Regex(@"^[/][A-Za-z]+");
-               /* Regex pattern = new Regex(@"^[a - zA - z][:]\\");
-                bool match = pattern.IsMatch(obj);*/
-                
-                
-                Directory.SetCurrentDirectory(obj);
-                _directoryInfo = new DirectoryInfo(".");
-                
-                /*if (!match)
+                Regex pattern = new Regex(@"^[a - zA - z][:]\\");
+                bool match = pattern.IsMatch(obj);
+                if (!match)
                 {
                     _directoryInfo = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}\\");
                     Directory.SetCurrentDirectory(_directoryInfo.Name);
-                    Console.WriteLine("We are here");
                 }
                 else
                 {
                     _directoryInfo = new DirectoryInfo($"{obj}\\");
                     Directory.SetCurrentDirectory(_directoryInfo.Name);
-                    Console.WriteLine("We are here");
-                }*/
+                    
+                }
                 
             }
             catch (Exception e)
@@ -225,7 +218,7 @@ namespace ConsoleProject
 
         public void DelMethod(string file, DirectoryInfo directoryInfo)
         {
-            DirectoryInfo startDirectory = new DirectoryInfo("/Users/aleksandrtkacenko/Desktop");
+            DirectoryInfo startDirectory = new DirectoryInfo(@"C:\");
 
             foreach (string f in Directory.GetFiles(startDirectory.Name))
             {
@@ -247,13 +240,11 @@ namespace ConsoleProject
 
                 if (!match)
                 {
-                    //Console.WriteLine(_directoryInfo.FullName);
                     DirectoryInfo dir = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}");
                     dir.Delete();
                 }
                 else
                 {
-                    //Console.WriteLine(_directoryInfo.FullName);
                     DirectoryInfo directoryinfo = new DirectoryInfo($"{obj}");
                     directoryinfo.Delete();
                 }
@@ -273,13 +264,12 @@ namespace ConsoleProject
 
                 if (!match)
                 {
-                    //Console.WriteLine(_directoryInfo.FullName);
                     DirectoryInfo dir = new DirectoryInfo($"{_directoryInfo.FullName}\\{obj}");
                     dir.Create();
                 }
                 else
                 {
-                    //Console.WriteLine(_directoryInfo.FullName);
+                    
                     DirectoryInfo directoryinfo = new DirectoryInfo($"{obj}");
                     directoryinfo.Create();
                 }

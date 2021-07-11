@@ -6,40 +6,7 @@ namespace ConsoleProject
     public class ConsoleCommand
     {
         public List<string> Parse(string str)
-        {
-            /*try
-            {
-                int pos = str.IndexOf(' ');
-                string command = String.Empty;
-                if (pos != -1)
-                {
-                    command = str.Substring(0, pos);
-                    if (IsCorrect(command))
-                    {
-                        _command = (Command) Enum.Parse(typeof(Command), command);
-                        Console.WriteLine(_command);
-                        _attributes.Clear();
-                        _attributes.Add(GetAddress(str));
-                        Console.WriteLine(_attributes[0]);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Wrong command input.");
-                    }
-                }
-                else
-                {
-                    if (str == Command.dir.ToString() || str == Command.cls.ToString() ||
-                        str == Command.help.ToString() || str == Command.exit.ToString())
-                        command = str;
-                    _command = (Command) Enum.Parse(typeof(Command), command);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }*/
-
+        { 
             try
             {
                 List<string> list = new List<string>();
